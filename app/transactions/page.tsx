@@ -1,57 +1,73 @@
-"use client"
+"use client";
 
-import { useState } from "react"
-import { DashboardLayout } from "@/components/dashboard-layout"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Input } from "@/components/ui/input"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { TransactionRow } from "@/components/transaction-row"
-import { Search, Filter } from "lucide-react"
-
-interface Transaction {
-  id: string
-  date: string
-  merchant: string
-  category: string
-  amount: number
-}
-
-const initialTransactions: Transaction[] = [
-  { id: "1", date: "Jun 15", merchant: "Whole Foods Market", category: "Food & Dining", amount: 87.43 },
-  { id: "2", date: "Jun 14", merchant: "Shell Gas Station", category: "Transportation", amount: 52.0 },
-  { id: "3", date: "Jun 14", merchant: "Amazon.com", category: "Shopping", amount: 124.99 },
-  { id: "4", date: "Jun 13", merchant: "Netflix", category: "Entertainment", amount: 15.99 },
-  { id: "5", date: "Jun 12", merchant: "Electric Company", category: "Bills & Utilities", amount: 145.67 },
-  { id: "6", date: "Jun 11", merchant: "Starbucks", category: "Food & Dining", amount: 6.75 },
-  { id: "7", date: "Jun 10", merchant: "Uber", category: "Transportation", amount: 23.5 },
-  { id: "8", date: "Jun 9", merchant: "Target", category: "Shopping", amount: 89.32 },
-  { id: "9", date: "Jun 8", merchant: "CVS Pharmacy", category: "Healthcare", amount: 34.21 },
-  { id: "10", date: "Jun 7", merchant: "Chipotle", category: "Food & Dining", amount: 12.85 },
-]
+import { useState, useMemo } from "react";
+import { DashboardLayout } from "@/components/dashboard-layout";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { TransactionRow } from "@/components/transaction-row";
+import { Search, Filter } from "lucide-react";
+import { useFinancial } from "@/contexts/financial-context";
+import type { Transaction } from "@/lib/types";
 
 export default function TransactionsPage() {
-  const [transactions, setTransactions] = useState<Transaction[]>(initialTransactions)
-  const [searchQuery, setSearchQuery] = useState("")
-  const [categoryFilter, setCategoryFilter] = useState("all")
+  const { data } = useFinancial();
+  const [searchQuery, setSearchQuery] = useState("");
+  const [categoryFilter, setCategoryFilter] = useState("all");
 
-  const handleUpdateTransaction = (id: string, updates: Partial<Transaction>) => {
-    setTransactions((prev) => prev.map((t) => (t.id === id ? { ...t, ...updates } : t)))
-  }
+  const handleUpdateTransaction = (
+    id: string,
+    updates: Partial<{ merchant: string; category: string; amount: number }>
+  ) => {
+    // For now, just log - in a real app you'd update storage
+    console.log("Update transaction:", id, updates);
+  };
 
-  const filteredTransactions = transactions.filter((t) => {
-    const matchesSearch = t.merchant.toLowerCase().includes(searchQuery.toLowerCase())
-    const matchesCategory = categoryFilter === "all" || t.category === categoryFilter
-    return matchesSearch && matchesCategory
-  })
+  const filteredTransactions = useMemo(() => {
+    return data.transactions
+      .filter((t) => {
+        const matchesSearch = t.description
+          .toLowerCase()
+          .includes(searchQuery.toLowerCase());
+        const matchesCategory =
+          categoryFilter === "all" || t.category === categoryFilter;
+        return matchesSearch && matchesCategory;
+      })
+      .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+  }, [data.transactions, searchQuery, categoryFilter]);
 
-  const categories = Array.from(new Set(transactions.map((t) => t.category)))
+  const categories = useMemo(() => {
+    return Array.from(new Set(data.transactions.map((t) => t.category)));
+  }, [data.transactions]);
+
+  // Convert Transaction to format expected by TransactionRow
+  const formattedTransactions = filteredTransactions.map((t) => ({
+    id: t.id,
+    date: new Date(t.date).toLocaleDateString("en-US", {
+      month: "short",
+      day: "numeric",
+    }),
+    merchant: t.description,
+    category: t.category,
+    amount: t.amount,
+  }));
 
   return (
     <DashboardLayout>
       <div className="space-y-6">
         <div>
-          <h2 className="text-3xl font-bold tracking-tight text-balance">Transactions</h2>
-          <p className="text-muted-foreground">View and manage your transaction history</p>
+          <h2 className="text-3xl font-bold tracking-tight text-balance">
+            Transactions
+          </h2>
+          <p className="text-muted-foreground">
+            View and manage your transaction history
+          </p>
         </div>
 
         <Card>
@@ -85,13 +101,19 @@ export default function TransactionsPage() {
           </CardHeader>
           <CardContent>
             <div className="space-y-0">
-              {filteredTransactions.length > 0 ? (
-                filteredTransactions.map((transaction) => (
-                  <TransactionRow key={transaction.id} transaction={transaction} onUpdate={handleUpdateTransaction} />
+              {formattedTransactions.length > 0 ? (
+                formattedTransactions.map((transaction) => (
+                  <TransactionRow
+                    key={transaction.id}
+                    transaction={transaction}
+                    onUpdate={handleUpdateTransaction}
+                  />
                 ))
               ) : (
                 <div className="py-12 text-center text-muted-foreground">
-                  No transactions found matching your criteria
+                  {data.transactions.length === 0
+                    ? "No transactions yet. Upload a CSV file to get started!"
+                    : "No transactions found matching your criteria"}
                 </div>
               )}
             </div>
@@ -99,5 +121,5 @@ export default function TransactionsPage() {
         </Card>
       </div>
     </DashboardLayout>
-  )
+  );
 }

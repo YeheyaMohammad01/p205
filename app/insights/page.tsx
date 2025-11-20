@@ -1,21 +1,22 @@
-"use client"
+"use client";
 
-import type React from "react"
+import type React from "react";
 
-import { useState, useRef, useEffect } from "react"
-import { DashboardLayout } from "@/components/dashboard-layout"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Input } from "@/components/ui/input"
-import { Button } from "@/components/ui/button"
-import { ChatMessage } from "@/components/chat-message"
-import { SuggestedQuestions } from "@/components/suggested-questions"
-import { Send, Sparkles } from "lucide-react"
-import { Bot } from "lucide-react" // Declare the Bot variable
+import { useState, useRef, useEffect } from "react";
+import { DashboardLayout } from "@/components/dashboard-layout";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { ChatMessage } from "@/components/chat-message";
+import { SuggestedQuestions } from "@/components/suggested-questions";
+import { Send, Sparkles } from "lucide-react";
+import { Bot } from "lucide-react";
+import { useFinancial } from "@/contexts/financial-context";
 
 interface Message {
-  id: string
-  role: "user" | "assistant"
-  content: string
+  id: string;
+  role: "user" | "assistant";
+  content: string;
 }
 
 const initialMessages: Message[] = [
@@ -25,7 +26,7 @@ const initialMessages: Message[] = [
     content:
       "Hello! I'm your AI financial assistant. I can help you understand your spending patterns, identify savings opportunities, and answer questions about your finances. What would you like to know?",
   },
-]
+];
 
 const mockResponses: Record<string, string> = {
   "where did i overspend this month?":
@@ -36,67 +37,97 @@ const mockResponses: Record<string, string> = {
     "I've identified three key opportunities: 1) Reduce dining out by cooking at home more often (potential savings: $200/month), 2) Review subscription services - you have Netflix and others that might be redundant (savings: $30/month), 3) Consider carpooling or public transit to reduce transportation costs (savings: $100/month).",
   "show me unusual transactions":
     "I found 2 unusual transactions: 1) A $124.99 Amazon purchase on Jun 14, which is 3x your average Amazon spending, and 2) An $87.43 Whole Foods purchase on Jun 15, which is higher than your typical grocery spending of $50-60.",
-}
+};
 
 export default function InsightsPage() {
-  const [messages, setMessages] = useState<Message[]>(initialMessages)
-  const [input, setInput] = useState("")
-  const [isTyping, setIsTyping] = useState(false)
-  const messagesEndRef = useRef<HTMLDivElement>(null)
+  const [messages, setMessages] = useState<Message[]>(initialMessages);
+  const [input, setInput] = useState("");
+  const [isTyping, setIsTyping] = useState(false);
+  const messagesEndRef = useRef<HTMLDivElement>(null);
+  const { data } = useFinancial();
 
   const scrollToBottom = () => {
-    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" })
-  }
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  };
 
   useEffect(() => {
-    scrollToBottom()
-  }, [messages])
+    scrollToBottom();
+  }, [messages]);
 
-  const handleSendMessage = (content: string) => {
-    if (!content.trim()) return
+  const handleSendMessage = async (content: string) => {
+    if (!content.trim()) return;
 
     const userMessage: Message = {
       id: Date.now().toString(),
       role: "user",
       content: content.trim(),
-    }
+    };
 
-    setMessages((prev) => [...prev, userMessage])
-    setInput("")
-    setIsTyping(true)
+    setMessages((prev) => [...prev, userMessage]);
+    setInput("");
+    setIsTyping(true);
 
-    // Simulate AI response
-    setTimeout(() => {
-      const lowerContent = content.toLowerCase().trim()
-      const response =
-        mockResponses[lowerContent] ||
-        "I understand your question. Based on your transaction history, I can provide insights about your spending patterns. Could you be more specific about what aspect of your finances you'd like to explore?"
+    try {
+      const response = await fetch("/api/chat", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          messages: [...messages, userMessage],
+          transactions: data.transactions,
+        }),
+      });
+
+      const responseData = await response.json();
+
+      if (!response.ok) {
+        throw new Error(
+          responseData.details || responseData.error || "Failed to get response"
+        );
+      }
 
       const assistantMessage: Message = {
         id: (Date.now() + 1).toString(),
         role: "assistant",
-        content: response,
-      }
+        content:
+          responseData.message || "Sorry, I couldn't process that request.",
+      };
 
-      setMessages((prev) => [...prev, assistantMessage])
-      setIsTyping(false)
-    }, 1000)
-  }
+      setMessages((prev) => [...prev, assistantMessage]);
+    } catch (error) {
+      console.error("Chat error:", error);
+      const errorMsg = error instanceof Error ? error.message : "Unknown error";
+      const errorMessage: Message = {
+        id: (Date.now() + 1).toString(),
+        role: "assistant",
+        content: `Sorry, I encountered an error: ${errorMsg}. Please check the console for details.`,
+      };
+      setMessages((prev) => [...prev, errorMessage]);
+    } finally {
+      setIsTyping(false);
+    }
+  };
 
   const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault()
-    handleSendMessage(input)
-  }
+    e.preventDefault();
+    handleSendMessage(input);
+  };
 
   return (
     <DashboardLayout>
       <div className="space-y-6">
         <div>
-          <h2 className="text-3xl font-bold tracking-tight text-balance">AI Insights</h2>
-          <p className="text-muted-foreground">Ask questions about your spending and get personalized insights</p>
+          <h2 className="text-3xl font-bold tracking-tight text-balance">
+            AI Insights
+          </h2>
+          <p className="text-muted-foreground">
+            Ask questions about your spending and get personalized insights
+          </p>
         </div>
 
-        <Card className="flex flex-col" style={{ height: "calc(100vh - 16rem)" }}>
+        <Card
+          className="flex flex-col"
+          style={{ height: "calc(100vh - 16rem)" }}
+        >
           <CardHeader className="border-b border-border">
             <CardTitle className="flex items-center gap-2">
               <Sparkles className="h-5 w-5 text-primary" />
@@ -106,7 +137,11 @@ export default function InsightsPage() {
           <CardContent className="flex flex-1 flex-col gap-4 overflow-hidden p-0">
             <div className="flex-1 space-y-4 overflow-y-auto p-6">
               {messages.map((message) => (
-                <ChatMessage key={message.id} role={message.role} content={message.content} />
+                <ChatMessage
+                  key={message.id}
+                  role={message.role}
+                  content={message.content}
+                />
               ))}
               {isTyping && (
                 <div className="flex gap-3">
@@ -138,7 +173,11 @@ export default function InsightsPage() {
                   className="flex-1"
                   disabled={isTyping}
                 />
-                <Button type="submit" size="icon" disabled={!input.trim() || isTyping}>
+                <Button
+                  type="submit"
+                  size="icon"
+                  disabled={!input.trim() || isTyping}
+                >
                   <Send className="h-4 w-4" />
                 </Button>
               </form>
@@ -147,5 +186,5 @@ export default function InsightsPage() {
         </Card>
       </div>
     </DashboardLayout>
-  )
+  );
 }
