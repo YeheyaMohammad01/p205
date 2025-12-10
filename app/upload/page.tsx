@@ -7,21 +7,21 @@ export default function UploadPage() {
   return (
     <DashboardLayout>
       <div className="space-y-6">
-        <div>
+        <section>
           <h2 className="text-3xl font-bold tracking-tight text-balance">Upload Center</h2>
           <p className="text-muted-foreground">Upload your financial documents for AI-powered analysis</p>
-        </div>
+        </section>
 
         <FileUpload />
 
-        <div>
-          <h3 className="text-lg font-semibold mb-4">Supported File Types</h3>
+        <section aria-labelledby="file-types-heading">
+          <h3 id="file-types-heading" className="text-lg font-semibold mb-4">Supported File Types</h3>
           <div className="grid gap-4 md:grid-cols-3">
             <Card>
               <CardHeader className="pb-3">
                 <div className="flex items-center gap-3">
                   <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary/10">
-                    <FileText className="h-5 w-5 text-primary" />
+                    <FileText className="h-5 w-5 text-primary" aria-hidden="true" />
                   </div>
                   <CardTitle className="text-base">PDF Documents</CardTitle>
                 </div>
@@ -35,7 +35,7 @@ export default function UploadPage() {
               <CardHeader className="pb-3">
                 <div className="flex items-center gap-3">
                   <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-accent/10">
-                    <FileSpreadsheet className="h-5 w-5 text-accent" />
+                    <FileSpreadsheet className="h-5 w-5 text-accent" aria-hidden="true" />
                   </div>
                   <CardTitle className="text-base">CSV Files</CardTitle>
                 </div>
@@ -49,7 +49,7 @@ export default function UploadPage() {
               <CardHeader className="pb-3">
                 <div className="flex items-center gap-3">
                   <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-chart-3/10">
-                    <FileImage className="h-5 w-5 text-chart-3" />
+                    <FileImage className="h-5 w-5 text-chart-3" aria-hidden="true" />
                   </div>
                   <CardTitle className="text-base">Images</CardTitle>
                 </div>
@@ -59,7 +59,7 @@ export default function UploadPage() {
               </CardContent>
             </Card>
           </div>
-        </div>
+        </section>
       </div>
     </DashboardLayout>
   )

@@ -37,7 +37,7 @@ export function SidebarNav() {
   const pathname = usePathname()
 
   return (
-    <nav className="flex flex-col gap-1 p-4">
+    <nav className="flex flex-col gap-1 p-4" aria-label="Main navigation">
       {navItems.map((item) => {
         const Icon = item.icon
         const isActive = pathname === item.href
@@ -51,8 +51,9 @@ export function SidebarNav() {
               "hover:bg-sidebar-accent hover:text-sidebar-accent-foreground",
               isActive ? "bg-sidebar-primary text-sidebar-primary-foreground" : "text-sidebar-foreground",
             )}
+            aria-current={isActive ? "page" : undefined}
           >
-            <Icon className="h-5 w-5" />
+            <Icon className="h-5 w-5" aria-hidden="true" />
             {item.title}
           </Link>
         )

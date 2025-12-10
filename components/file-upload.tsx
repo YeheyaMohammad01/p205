@@ -138,19 +138,22 @@ export function FileUpload() {
         onDragOver={handleDragOver}
         onDragLeave={handleDragLeave}
         onDrop={handleDrop}
+        role="region"
+        aria-label="File upload area"
       >
         <CardContent className="flex flex-col items-center justify-center p-12 text-center">
           <div className="flex h-16 w-16 items-center justify-center rounded-full bg-primary/10 mb-4">
-            <Upload className="h-8 w-8 text-primary" />
+            <Upload className="h-8 w-8 text-primary" aria-hidden="true" />
           </div>
           <h3 className="text-lg font-semibold mb-2">Drop your files here</h3>
           <p className="text-sm text-muted-foreground mb-4">
             Supports PDF, CSV, and image files (JPG, PNG)
           </p>
-          <label htmlFor="file-input">
+          <label htmlFor="file-input" className="cursor-pointer">
             <Button
               type="button"
               onClick={() => document.getElementById("file-input")?.click()}
+              aria-label="Choose file from computer"
             >
               Browse Files
             </Button>
@@ -162,6 +165,7 @@ export function FileUpload() {
             accept=".pdf,.csv,.jpg,.jpeg,.png"
             className="hidden"
             onChange={handleFileInput}
+            aria-label="Select transaction files to upload"
           />
         </CardContent>
       </Card>

@@ -166,19 +166,25 @@ export default function InsightsPage() {
 
             <div className="border-t border-border p-4">
               <form onSubmit={handleSubmit} className="flex gap-2">
+                <label htmlFor="chat-input" className="sr-only">
+                  Ask about your finances
+                </label>
                 <Input
+                  id="chat-input"
                   value={input}
                   onChange={(e) => setInput(e.target.value)}
                   placeholder="Ask about your finances..."
                   className="flex-1"
                   disabled={isTyping}
+                  aria-label="Type your financial question"
                 />
                 <Button
                   type="submit"
                   size="icon"
                   disabled={!input.trim() || isTyping}
+                  aria-label="Send message"
                 >
-                  <Send className="h-4 w-4" />
+                  <Send className="h-4 w-4" aria-hidden="true" />
                 </Button>
               </form>
             </div>

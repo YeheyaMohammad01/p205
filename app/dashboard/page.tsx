@@ -42,16 +42,20 @@ export default function HomePage() {
   return (
     <DashboardLayout>
       <div className="space-y-6">
-        <div>
+        <section>
           <h2 className="text-3xl font-bold tracking-tight text-balance">
             Dashboard
           </h2>
           <p className="text-muted-foreground">
             Your financial overview at a glance
           </p>
-        </div>
+        </section>
 
-        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+        <section aria-labelledby="stats-heading">
+          <h3 id="stats-heading" className="sr-only">
+            Financial Statistics
+          </h3>
+          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
           <StatCard
             title="Total Spent"
             value={`$${stats.totalSpent.toFixed(2)}`}
@@ -98,12 +102,18 @@ export default function HomePage() {
             changeType="positive"
             icon={TrendingDown}
           />
-        </div>
+          </div>
+        </section>
 
-        <div className="grid gap-6 lg:grid-cols-2">
-          <SpendingChart />
-          <CategoryChart />
-        </div>
+        <section aria-labelledby="charts-heading">
+          <h3 id="charts-heading" className="sr-only">
+            Spending Visualizations
+          </h3>
+          <div className="grid gap-6 lg:grid-cols-2">
+            <SpendingChart />
+            <CategoryChart />
+          </div>
+        </section>
       </div>
     </DashboardLayout>
   );
