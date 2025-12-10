@@ -54,10 +54,10 @@ export function CategoryChart() {
         </CardDescription>
       </CardHeader>
       <CardContent>
-        <ChartContainer config={chartConfig} className="h-[300px] w-full">
+        <ChartContainer config={chartConfig} className="h-[250px] sm:h-[300px] w-full">
           <BarChart
             data={chartData}
-            margin={{ top: 10, right: 10, left: 0, bottom: 0 }}
+            margin={{ top: 10, right: 5, left: -20, bottom: 0 }}
           >
             <CartesianGrid
               strokeDasharray="3 3"

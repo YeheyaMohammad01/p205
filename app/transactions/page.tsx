@@ -4,6 +4,17 @@ import { useState, useMemo } from "react";
 import { DashboardLayout } from "@/components/dashboard-layout";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 import {
   Select,
   SelectContent,
@@ -12,14 +23,22 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { TransactionRow } from "@/components/transaction-row";
-import { Search, Filter } from "lucide-react";
+import { Search, Filter, Trash2 } from "lucide-react";
 import { useFinancial } from "@/contexts/financial-context";
+import { storage } from "@/lib/storage";
+import { toast } from "sonner";
 import type { Transaction } from "@/lib/types";
 
 export default function TransactionsPage() {
-  const { data } = useFinancial();
+  const { data, refreshData } = useFinancial();
   const [searchQuery, setSearchQuery] = useState("");
   const [categoryFilter, setCategoryFilter] = useState("all");
+
+  const handleClearTransactions = () => {
+    storage.clearData();
+    refreshData();
+    toast.success("All transactions cleared. Starting fresh!");
+  };
 
   const handleUpdateTransaction = (
     id: string,
@@ -72,13 +91,47 @@ export default function TransactionsPage() {
 
         <Card>
           <CardHeader>
-            <CardTitle>All Transactions</CardTitle>
+            <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+              <CardTitle>All Transactions</CardTitle>
+              <AlertDialog>
+                <AlertDialogTrigger asChild>
+                  <Button
+                    variant="destructive"
+                    size="sm"
+                    className="w-full sm:w-auto"
+                  >
+                    <Trash2 className="mr-2 h-4 w-4" />
+                    Clear All
+                  </Button>
+                </AlertDialogTrigger>
+                <AlertDialogContent>
+                  <AlertDialogHeader>
+                    <AlertDialogTitle>Clear all transactions?</AlertDialogTitle>
+                    <AlertDialogDescription>
+                      This will delete all transactions and reset your budget data. This action cannot be undone.
+                    </AlertDialogDescription>
+                  </AlertDialogHeader>
+                  <div className="flex gap-2">
+                    <AlertDialogCancel>Cancel</AlertDialogCancel>
+                    <AlertDialogAction
+                      onClick={handleClearTransactions}
+                      className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                    >
+                      Clear All
+                    </AlertDialogAction>
+                  </div>
+                </AlertDialogContent>
+              </AlertDialog>
+            </div>
             <div className="flex flex-col gap-3 pt-4 sm:flex-row">
               <div className="relative flex-1">
                 <label htmlFor="search-input" className="sr-only">
                   Search transactions
                 </label>
-                <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" aria-hidden="true" />
+                <Search
+                  className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground"
+                  aria-hidden="true"
+                />
                 <Input
                   id="search-input"
                   placeholder="Search transactions..."
@@ -92,8 +145,14 @@ export default function TransactionsPage() {
                 <label htmlFor="category-filter" className="sr-only">
                   Filter by category
                 </label>
-                <Select value={categoryFilter} onValueChange={setCategoryFilter}>
-                  <SelectTrigger className="w-full sm:w-48" id="category-filter">
+                <Select
+                  value={categoryFilter}
+                  onValueChange={setCategoryFilter}
+                >
+                  <SelectTrigger
+                    className="w-full sm:w-48"
+                    id="category-filter"
+                  >
                     <Filter className="mr-2 h-4 w-4" aria-hidden="true" />
                     <SelectValue placeholder="Filter by category" />
                   </SelectTrigger>

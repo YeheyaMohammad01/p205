@@ -1,9 +1,15 @@
-"use client"
+"use client";
 
-import Link from "next/link"
-import { usePathname } from "next/navigation"
-import { cn } from "@/lib/utils"
-import { LayoutDashboard, Upload, Receipt, MessageSquare, PiggyBank } from "lucide-react"
+import Link from "next/link";
+import { usePathname } from "next/navigation";
+import { cn } from "@/lib/utils";
+import {
+  LayoutDashboard,
+  Upload,
+  Receipt,
+  MessageSquare,
+  PiggyBank,
+} from "lucide-react";
 
 const navItems = [
   {
@@ -31,16 +37,16 @@ const navItems = [
     href: "/budget",
     icon: PiggyBank,
   },
-]
+];
 
 export function SidebarNav() {
-  const pathname = usePathname()
+  const pathname = usePathname();
 
   return (
     <nav className="flex flex-col gap-1 p-4" aria-label="Main navigation">
       {navItems.map((item) => {
-        const Icon = item.icon
-        const isActive = pathname === item.href
+        const Icon = item.icon;
+        const isActive = pathname === item.href;
 
         return (
           <Link
@@ -49,15 +55,17 @@ export function SidebarNav() {
             className={cn(
               "flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors",
               "hover:bg-sidebar-accent hover:text-sidebar-accent-foreground",
-              isActive ? "bg-sidebar-primary text-sidebar-primary-foreground" : "text-sidebar-foreground",
+              isActive
+                ? "bg-sidebar-primary text-sidebar-primary-foreground"
+                : "text-sidebar-foreground"
             )}
             aria-current={isActive ? "page" : undefined}
           >
             <Icon className="h-5 w-5" aria-hidden="true" />
             {item.title}
           </Link>
-        )
+        );
       })}
     </nav>
-  )
+  );
 }

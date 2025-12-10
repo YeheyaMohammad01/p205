@@ -84,10 +84,10 @@ export function SpendingChart() {
         <CardDescription>Your spending over the last 6 months</CardDescription>
       </CardHeader>
       <CardContent>
-        <ChartContainer config={chartConfig} className="h-[300px] w-full">
+        <ChartContainer config={chartConfig} className="h-[250px] sm:h-[300px] w-full">
           <AreaChart
             data={chartData}
-            margin={{ top: 10, right: 10, left: 0, bottom: 0 }}
+            margin={{ top: 10, right: 5, left: -20, bottom: 0 }}
           >
             <defs>
               <linearGradient id="fillSpending" x1="0" y1="0" x2="0" y2="1">

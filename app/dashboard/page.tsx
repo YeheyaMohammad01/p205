@@ -55,53 +55,53 @@ export default function HomePage() {
           <h3 id="stats-heading" className="sr-only">
             Financial Statistics
           </h3>
-          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-          <StatCard
-            title="Total Spent"
-            value={`$${stats.totalSpent.toFixed(2)}`}
-            change={
-              data.transactions.length === 0
-                ? "No transactions yet"
-                : `${data.transactions.length} transactions`
-            }
-            changeType={
-              stats.totalSpent > data.monthlyBudget ? "negative" : "positive"
-            }
-            icon={DollarSign}
-          />
-          <StatCard
-            title="Monthly Budget"
-            value={`$${data.monthlyBudget.toFixed(2)}`}
-            change={
-              stats.remaining >= 0
-                ? `$${stats.remaining.toFixed(2)} remaining`
-                : `$${Math.abs(stats.remaining).toFixed(2)} over budget`
-            }
-            changeType={stats.remaining >= 0 ? "positive" : "negative"}
-            icon={CreditCard}
-          />
-          <StatCard
-            title="Top Category"
-            value={stats.topCategory?.name || "N/A"}
-            change={
-              stats.topCategory
-                ? `$${stats.topCategory.amount.toFixed(2)} this month`
-                : "No data"
-            }
-            changeType="neutral"
-            icon={TrendingUp}
-          />
-          <StatCard
-            title="Avg. Daily"
-            value={`$${stats.avgDaily.toFixed(2)}`}
-            change={
-              data.transactions.length === 0
-                ? "Upload transactions"
-                : "Last 30 days"
-            }
-            changeType="positive"
-            icon={TrendingDown}
-          />
+          <div className="grid gap-3 sm:gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-4">
+            <StatCard
+              title="Total Spent"
+              value={`$${stats.totalSpent.toFixed(2)}`}
+              change={
+                data.transactions.length === 0
+                  ? "No transactions yet"
+                  : `${data.transactions.length} transactions`
+              }
+              changeType={
+                stats.totalSpent > data.monthlyBudget ? "negative" : "positive"
+              }
+              icon={DollarSign}
+            />
+            <StatCard
+              title="Monthly Budget"
+              value={`$${data.monthlyBudget.toFixed(2)}`}
+              change={
+                stats.remaining >= 0
+                  ? `$${stats.remaining.toFixed(2)} remaining`
+                  : `$${Math.abs(stats.remaining).toFixed(2)} over budget`
+              }
+              changeType={stats.remaining >= 0 ? "positive" : "negative"}
+              icon={CreditCard}
+            />
+            <StatCard
+              title="Top Category"
+              value={stats.topCategory?.name || "N/A"}
+              change={
+                stats.topCategory
+                  ? `$${stats.topCategory.amount.toFixed(2)} this month`
+                  : "No data"
+              }
+              changeType="neutral"
+              icon={TrendingUp}
+            />
+            <StatCard
+              title="Avg. Daily"
+              value={`$${stats.avgDaily.toFixed(2)}`}
+              change={
+                data.transactions.length === 0
+                  ? "Upload transactions"
+                  : "Last 30 days"
+              }
+              changeType="positive"
+              icon={TrendingDown}
+            />
           </div>
         </section>
 
@@ -109,7 +109,7 @@ export default function HomePage() {
           <h3 id="charts-heading" className="sr-only">
             Spending Visualizations
           </h3>
-          <div className="grid gap-6 lg:grid-cols-2">
+          <div className="grid gap-4 sm:gap-6 grid-cols-1 lg:grid-cols-2">
             <SpendingChart />
             <CategoryChart />
           </div>
