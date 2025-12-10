@@ -108,7 +108,8 @@ export default function TransactionsPage() {
                   <AlertDialogHeader>
                     <AlertDialogTitle>Clear all transactions?</AlertDialogTitle>
                     <AlertDialogDescription>
-                      This will delete all transactions and reset your budget data. This action cannot be undone.
+                      This will delete all transactions and reset your budget
+                      data. This action cannot be undone.
                     </AlertDialogDescription>
                   </AlertDialogHeader>
                   <div className="flex gap-2">

@@ -84,7 +84,10 @@ export function SpendingChart() {
         <CardDescription>Your spending over the last 6 months</CardDescription>
       </CardHeader>
       <CardContent>
-        <ChartContainer config={chartConfig} className="h-[250px] sm:h-[300px] w-full">
+        <ChartContainer
+          config={chartConfig}
+          className="h-[250px] sm:h-[300px] w-full"
+        >
           <AreaChart
             data={chartData}
             margin={{ top: 10, right: 5, left: -20, bottom: 0 }}
